@@ -30,7 +30,7 @@ The repository is organized into two main directories: `Code` and `Dataset`.
 │
 └── Dataset/
     ├── LogicBench/       # LogicBench (BQA task) dataset
-    ├── LogicEval/        # Multi-LogiEval dataset (Reasoning depths 1-5)
+    ├── Multi-LogiEval/        # Multi-LogiEval dataset (Reasoning depths 1-5)
     ├── LogicNMR/         # LogicNMR synthetic dataset (Dynamic updates)
     └── MultiLogicNMR/    # MultiLogicNMR dataset (Multi-extension scenarios)
 ```
