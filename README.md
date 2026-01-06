@@ -6,7 +6,7 @@ This repository contains the source code and datasets for the paper **"AS-NMRer:
 
 ## 📖 Overview
 
-AS-NMRer is a neuro-symbolic framework designed to enhance Large Language Models (LLMs) in non-monotonic reasoning (NMR) tasks. [cite_start]It addresses the challenges of linguistic noise and ambiguity through a three-stage process:
+AS-NMRer is a neuro-symbolic framework designed to enhance Large Language Models (LLMs) in non-monotonic reasoning (NMR) tasks. It addresses the challenges of linguistic noise and ambiguity through a three-stage process:
 
 1.  **Abstraction:** Distills raw noisy contexts into atomic facts and default rules.
 2.  **Step-wise Formalization:** Maps abstracted sentences to Answer Set Programming (ASP) logic programs using a verification-guided Best-of-N search.
@@ -55,7 +55,7 @@ We provide the four benchmarks used in our experiments in the Dataset/ directory
 
 1. LogicBench: A dataset evaluating robustness against linguistic noise in Binary Question Answering (BQA) tasks. It includes patterns like DRD, DRI, DRS, etc.
 
-2. LogicEval (Multi-LogiEval): Assesses multi-step reasoning capabilities across increasing reasoning depths (from Depth 1 to Depth 5).
+2. Multi-LogiEval: Assesses multi-step reasoning capabilities across increasing reasoning depths (from Depth 1 to Depth 5).
 
 3. LogicNMR: A synthetic benchmark for probing non-monotonic reasoning in dynamic knowledge bases, with updates ranging from U=1 to U=5.
 
