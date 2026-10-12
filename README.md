@@ -1,65 +1,161 @@
 # AS-NMRer: Improving Autoformalization for Non-monotonic Reasoning via Abstraction, Search, and Fine-tuning
 
-This repository contains the source code and datasets for the paper **"AS-NMRer: Improving Autoformalization for Non-monotonic Reasoning via Abstraction, Search, and Fine-tuning"**.
+This repository contains the source code, benchmark datasets, and human-evaluation annotations for the paper **"AS-NMRer: Improving Autoformalization for Non-monotonic Reasoning via Abstraction, Search, and Fine-tuning"**.
 
-**Note:** This submission is **anonymous** for double-blind review. All identifying information (author names, affiliations, specific paths) has been removed or obfuscated.
+**Anonymous submission.** This repository is provided for anonymous double-blind review.
 
-## 📖 Overview
+## Overview
 
-AS-NMRer is a neuro-symbolic framework designed to enhance Large Language Models (LLMs) in non-monotonic reasoning (NMR) tasks. It addresses the challenges of linguistic noise and ambiguity through a three-stage process:
+AS-NMRer is a neuro-symbolic framework for natural-language non-monotonic reasoning (NMR). Its inference pipeline consists of three stages.
 
-1.  **Abstraction:** Distills raw noisy contexts into atomic facts and default rules.
-2.  **Step-wise Formalization:** Maps abstracted sentences to Answer Set Programming (ASP) logic programs using a verification-guided Best-of-N search.
-3.  **Symbolic Solving:** Derives rigorous answers using a deterministic ASP solver.
+1. **Abstraction** selects and simplifies query-relevant facts and default rules from the supplied context.
+2. **Step-wise Formalization** translates abstracted sentences into Answer Set Programming (ASP) fragments through default-logic representations. A verification-guided Best-of-N search combines solver-based syntax checks with LLM-based semantic scoring to select candidate fragments.
+3. **Symbolic Solving** executes the generated ASP program with clingo to determine the query answer, supporting skeptical and credulous reasoning when multiple answer sets arise.
 
-Additionally, the framework includes an **Expert Iteration** mechanism for self-improvement via supervised fine-tuning on solver-verified trajectories.
+AS-NMRer also supports **Expert Iteration**, which fine-tunes open-source backbones on training instances selected by agreement between solver outputs and gold answers. This selection criterion does not guarantee that every intermediate abstraction or formalization is semantically correct.
 
-## 📂 Repository Structure
+## Repository Structure
 
-The repository is organized into two main directories: `Code` and `Dataset`.
+The repository contains two main directories, `Code` and `Dataset`.
 
 ```text
 .
 ├── Code/
 │   └── AS_NMRer_with_DL_for_LogicBench/
-│       ├── Ablation_Anaysis/            # Scripts for ablation studies (e.g., w/o Abstraction, w/o Search)
-│       ├── AS-NMRer_for_LogicBench/     # Core implementation of the AS-NMRer framework
-│       ├── Fine_Tuned_Models/           # Code for Expert Iteration and SFT using Unsloth/LoRA
-│       ├── LLASP_for_LogicBench/        # Implementation of the LLM2ASP baseline
-│       └── Zero_Few_Shot_for_LogicBench/# Scripts for Zero-shot and Few-shot prompting baselines
+│       ├── Ablation_Anaysis/             # Component ablation studies
+│       ├── AS-NMRer_for_LogicBench/      # Main AS-NMRer inference pipeline
+│       ├── Fine_Tuned_Models/           # Expert iteration and supervised fine-tuning
+│       ├── LLASP_for_LogicBench/        # LLM2ASP baseline
+│       └── Zero_Few_Shot_for_LogicBench/ # Zero-shot and few-shot prompting baselines
 │
 └── Dataset/
-    ├── LogicBench/       # LogicBench (BQA task) dataset
-    ├── Multi-LogiEval/        # Multi-LogiEval dataset (Reasoning depths 1-5)
-    ├── LogicNMR/         # LogicNMR synthetic dataset (Dynamic updates)
-    └── MultiLogicNMR/    # MultiLogicNMR dataset (Multi-extension scenarios)
+    ├── Examples of Human Validation of the Semantic Verifier/
+    │   └── Semantic_Verifier_Examples.json
+    ├── LogicBench/                      # LogicBench BQA NMR subsets
+    ├── LogicEval/                       # Multi-LogiEval NMR subsets, depths 1–5
+    ├── LogicNMR/                        # Sequential knowledge-base updates
+    └── MultiLogicNMR/                   # Multiple-answer-set reasoning
 ```
 
-### Prerequisites
-To reproduce the experiments, you will need the following dependencies.
-* Python 3.11
-* ASP Solver: This project uses Answer Set Programming. You must install clingo to run the symbolic solver.
+The `LogicEval` directory contains the Multi-LogiEval data.
 
-## 🚀 Usage
-### 1. Running AS-NMRer (Main Framework)
-The main inference pipeline (Abstraction → Step-wise Search → Solving) is located in Code/AS_NMRer_with_DL_for_LogicBench/AS-NMRer_for_LogicBench.
+## Prerequisites
 
-### 2. Running Baselines
-To run the baseline models for comparison:
-* LLM2ASP: Run the scripts located in LLASP_for_LogicBench.
-* Prompting (Zero/Few-Shot): Run the scripts located in Zero_Few_Shot_for_LogicBench.
-* Fine-tuning: Use the scripts in Fine_Tuned_Models. We utilize Unsloth for efficient LoRA fine-tuning .
+- Python 3.11.
+- clingo for executing ASP programs.
+- Access to the model backend required by the selected inference script.
+- Unsloth and a compatible CUDA environment for the fine-tuning experiments.
 
-## 📊 Datasets
-We provide the four benchmarks used in our experiments in the Dataset/ directory:
+Configure model access, credentials, and dataset paths according to the selected script. Do not commit API keys or other private credentials.
 
-1. LogicBench: A dataset evaluating robustness against linguistic noise in Binary Question Answering (BQA) tasks. It includes patterns like DRD, DRI, DRS, etc.
+## Usage
 
-2. Multi-LogiEval: Assesses multi-step reasoning capabilities across increasing reasoning depths (from Depth 1 to Depth 5).
+### Running AS-NMRer
 
-3. LogicNMR: A synthetic benchmark for probing non-monotonic reasoning in dynamic knowledge bases, with updates ranging from U=1 to U=5.
+The main inference pipeline is located in:
 
-4. MultiLogicNMR: Evaluates reasoning in complex scenarios with multiple valid answer sets, supporting both Credulous and Skeptical reasoning modes.
+```text
+Code/AS_NMRer_with_DL_for_LogicBench/AS-NMRer_for_LogicBench/
+```
 
+The pipeline performs abstraction, verification-guided step-wise formalization, and symbolic solving.
 
-  
+### Running Baselines
+
+Baseline implementations are located under:
+
+```text
+Code/AS_NMRer_with_DL_for_LogicBench/
+```
+
+- **LLM2ASP** is implemented in `LLASP_for_LogicBench/`.
+- **Zero-shot and few-shot prompting** are implemented in `Zero_Few_Shot_for_LogicBench/`.
+- **Fine-tuning and expert iteration** scripts are provided in `Fine_Tuned_Models/`.
+
+### Running Ablation Studies
+
+Component ablation scripts are located in:
+
+```text
+Code/AS_NMRer_with_DL_for_LogicBench/Ablation_Anaysis/
+```
+
+These scripts examine the contributions of abstraction, step-wise search, and verification components.
+
+## Benchmark Datasets
+
+The `Dataset` directory contains the four benchmarks used in the paper.
+
+1. **LogicBench** evaluates the NMR subsets of the Binary Question Answering (BQA) task across eight reasoning patterns, including DRD, DRI, DRO, DRS, RE1–3, and RAP.
+
+2. **Multi-LogiEval** evaluates multi-step logical reasoning across reasoning depths from one to five. Its data are stored in `Dataset/LogicEval/`.
+
+3. **LogicNMR** evaluates non-monotonic reasoning under sequential knowledge-base updates. The variable `U` denotes the number of updates, ranging from 1 to 5.
+
+4. **MultiLogicNMR** evaluates non-monotonic reasoning with multiple answer sets under skeptical and credulous reasoning modes. Skeptical reasoning requires support in all answer sets, whereas credulous reasoning requires support in at least one.
+
+## Human Evaluation of the Semantic Verifier
+
+### Data Location
+
+Sentence–ASP pairs and their annotations are provided in:
+
+```text
+Dataset/Examples of Human Validation of the Semantic Verifier/
+Semantic_Verifier_Examples.json
+```
+
+These records support inspection of agreement and disagreement between semantic-verifier scores and human judgments.
+
+Each record contains a natural-language sentence, its candidate ASP fragment, the verifier score, the sampling stratum, and human-annotation fields.
+
+### Example Record
+
+```json
+{
+  "sample_number": "10",
+  "natural_language_sentence": "snow isn't always accompanied by cold weather conditions.",
+  "formalized_asp_sentence": "-coldWeatherConditions(snow).",
+  "semantic_score": 0.1,
+  "score_bin": "0.0-0.2",
+  "human_label": 0.9,
+  "human_score": null,
+  "human_notes": ""
+}
+```
+
+### Field Definitions
+
+| Field | Description |
+| --- | --- |
+| `sample_number` | Sample identifier, stored as a string. |
+| `natural_language_sentence` | Natural-language sentence evaluated by the verifier and human annotators. |
+| `formalized_asp_sentence` | Candidate ASP fragment corresponding to the sentence. |
+| `semantic_score` | Semantic-verifier score on a scale from 0 to 1. |
+| `score_bin` | Verifier-score stratum used for score-stratified sampling. |
+| `human_label` | Numeric human semantic-correctness score. Despite its name, this field contains a score rather than a binary label in the supplied schema. |
+| `human_score` | Additional nullable human-score field. The example stores the human annotation in `human_label` and leaves this field as `null`. |
+| `human_notes` | Optional annotation notes. An empty string indicates that no notes are recorded in this field. |
+
+Missing values must not be interpreted as zero scores. In particular, use the numeric annotation stored in `human_label` when `human_score` is `null`.
+
+### Evaluation Threshold
+
+For the human-evaluation comparison, human scores and semantic-verifier scores are binarized at **0.5**.
+
+- A score of at least `0.5` is treated as semantically correct.
+- A score below `0.5` is treated as semantically incorrect or only partially consistent.
+
+A **false positive** occurs when the verifier score is at least `0.5` but the human score is below `0.5`.
+
+A **false negative** occurs when the verifier score is below `0.5` but the human score is at least `0.5`.
+
+In the example above, `semantic_score = 0.1` and `human_label = 0.9` produce a false-negative classification at the evaluation threshold of `0.5`.
+
+The human-evaluation threshold is distinct from the inference-time semantic-filtering threshold of **0.1**. Passing the semantic threshold alone does not guarantee that a candidate is selected; syntax checks and candidate ranking also apply.
+
+### Evaluation Scope
+
+The evaluation uses score-stratified samples of individual sentence–ASP pairs. It assesses agreement between verifier decisions and human judgments on those pairs, not the semantic correctness of complete generated programs.
+
+The verifier provides empirical candidate scores rather than a formal correctness guarantee.
